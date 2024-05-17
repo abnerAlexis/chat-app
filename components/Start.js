@@ -1,6 +1,5 @@
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, ImageBackground } from "react-native";
 import { useState } from "react";
-
 const Start = ({ navigation }) => {
     const [name, setName] = useState('');
     const [selectedBackground, setSelectedBackground] = useState('#090C08');
