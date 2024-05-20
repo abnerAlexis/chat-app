@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Platform, KeyboardAvoidingView } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
 
-const Chat = ({ route, navigation }) => {
+const Chat = ({ route, navigation, db }) => {
     // using object destructuring to extract specific properties(name and background) from the route.params object.
     const { name, backgroundColor } = route.params;
     const [messages, setMessages] = useState([]);
