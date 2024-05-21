@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, View, Text, Platform, KeyboardAvoidingView } from "react-native";
+import { StyleSheet, View, Platform, KeyboardAvoidingView } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
+import { collection, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
 
 const Chat = ({ route, navigation, db }) => {
     // using object destructuring to extract specific properties(name and background) from the route.params object.
-    const { name, backgroundColor } = route.params;
+    const { name, backgroundColor, userID } = route.params;
     const [messages, setMessages] = useState([]);
 
     // Customization for the background color of bubbles
@@ -30,51 +31,41 @@ const Chat = ({ route, navigation, db }) => {
 
     // initializes the 'messages' state with two predefined messages when the component mounts for the first time
     useEffect(() => {
-        setMessages([
-            {
-                _id: 1,
-                text: 'Hello Developer',
-                createdAt: new Date(),
-                user: {
-                    _id: 2,
-                    name: 'React Native',
-                    avatar: 'https://placeimg.com/140/140/any',
-                },
-            },
-            {
-                _id: 2,
-                text: 'This is a system message',
-                createdAt: new Date(),
-                system: true,
-            }
-        ]);
+        const messageQuery = query(
+            collection(db, 'messages'),
+            orderBy('createdAt', 'desc')
+        );
+
+        const unsubscribe = onSnapshot(messageQuery, (querySnapshot) => {
+            const messagesFirestore = querySnapshot.docs.map((doc) => {
+                const data = doc.data();
+                return {
+                    _id: doc.id,
+                    text: data.text,
+                    createdAt: data.createdAt.toDate(),
+                    user: data.user,
+                };
+            });
+            setMessages(messagesFirestore);
+        });
     }, []);
 
     const onSend = (newMessages) => {
-        setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
+        addDoc(collection(db, "messages"), newMessages[0]);
     };
 
     return (
         <View style={[styles.container, { backgroundColor: backgroundColor }]}>
-            {/* component serves as a pre-styled chat interface that includes 
-            features like message input, message display */}
             <GiftedChat
                 messages={messages}
                 renderBubble={renderBubble}
                 onSend={messages => onSend(messages)}
                 user={{
-                    _id: 1
+                    _id: userID,
+                    name: name
                 }}
             />
-            {/* ensuring that a KeyboardAvoidingView is only rendered when the app is running 
-                on an Android device. */}
-            {
-                Platform.OS === 'android' ?
-                    <KeyboardAvoidingView
-                        behavior="height"
-                    /> :
-                    null
-            }
+            {Platform.OS === 'android' && <KeyboardAvoidingView behavior="height" />}
         </View>
     );
 }

@@ -10,14 +10,14 @@ const Start = ({ navigation }) => {
 
     const signInUser = () => {
         signInAnonymously(auth)
-            .then(result => { 
-                navigation.navigate('Chat', { name: name, backgroundColor: selectedBackground })
+            .then(result => {
+                navigation.navigate('Chat', { name: name, backgroundColor: selectedBackground, userID: result.user.uid })
                 Alert.alert('Signed in successfully.')
             })
             .catch((error) => {
                 Alert.alert('Unable to sign in, try later again.')
             })
-    }    
+    }
 
     // Array of color options
     const colorOptions = [
