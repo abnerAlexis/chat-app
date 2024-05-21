@@ -1,8 +1,11 @@
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, ImageBackground } from "react-native";
 import { useState } from "react";
+import { getAuth, signInAnonymously } from "firebase/auth";
+
 const Start = ({ navigation }) => {
     const [name, setName] = useState('');
     const [selectedBackground, setSelectedBackground] = useState('#090C08');
+    const auth = getAuth();
 
     // Array of color options
     const colorOptions = [
