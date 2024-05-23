@@ -11,14 +11,19 @@ import Chat from './components/Chat';
 const Stack = createNativeStackNavigator();
 
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, disableNetwork, enableNetwork } from 'firebase/firestore';
 
 const App = () => {
   //Defining a new state useNetInfo() that represents the network connectivity
   const connectionStatus = useNetInfo();
 
   useEffect(() => {
-    if (connectionStatus.isConnected === false) Alert.alert('Connection lost!');
+    if (connectionStatus.isConnected === false) {
+      Alert.alert('Connection lost!');
+      disableNetwork(db);
+    } else if (connectionStatus.isConnected === true) {
+      enableNetwork(db);
+    }
   }, [connectionStatus.isConnected]);
 
   //App's Firebase configuration
