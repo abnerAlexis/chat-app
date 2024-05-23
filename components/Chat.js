@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { StyleSheet, View, Platform, KeyboardAvoidingView } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import { collection, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Chat = ({ route, navigation, db }) => {
-    // using object destructuring to extract specific properties(name and background) from the route.params object.
+    // using object destructuring to extract specific properties(name, userID and background) from the route.params object.
     const { name, backgroundColor, userID } = route.params;
     const [messages, setMessages] = useState([]);
 
@@ -29,7 +30,14 @@ const Chat = ({ route, navigation, db }) => {
         navigation.setOptions({ title: name });
     }, []);
 
-    // initializes the 'messages' state with two predefined messages when the component mounts for the first time
+    const cacheMessages = async (messagesToCache) => {
+        try {
+            await AsyncStorage.setItem('messages', JSON.stringify(messagesToCache));
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
     useEffect(() => {
         const messageQuery = query(
             collection(db, 'messages'),
@@ -46,6 +54,7 @@ const Chat = ({ route, navigation, db }) => {
                     user: data.user,
                 };
             });
+            cacheMessages(messagesFirestore)
             setMessages(messagesFirestore);
         });
     }, []);
