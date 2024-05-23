@@ -3,7 +3,6 @@ import { StyleSheet, View, Platform, KeyboardAvoidingView } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import { collection, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNetInfo }from '@react-native-community/netinfo';
 
 const Chat = ({ route, navigation, db }) => {
     // using object destructuring to extract specific properties(name, userID and background) from the route.params object.
