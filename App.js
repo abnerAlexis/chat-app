@@ -1,7 +1,9 @@
 import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useEffect } from 'react';
 import { useNetInfo }from '@react-native-community/netinfo';
+import { Alert } from 'react-native';
 import Start from './components/Start';
 import Chat from './components/Chat';
 
@@ -12,6 +14,13 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
 const App = () => {
+  //Defining a new state useNetInfo() that represents the network connectivity
+  const connectionStatus = useNetInfo();
+
+  useEffect(() => {
+    if (connectionStatus.isConnected === false) Alert.alert('Connection lost!');
+  }, [connectionStatus.isConnected]);
+
   //App's Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyAusc8pa7iar4AWmnPMzTjVojPekMdCgzs",
