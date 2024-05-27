@@ -1,9 +1,8 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useEffect } from 'react';
 import { useNetInfo }from '@react-native-community/netinfo';
-import { Alert } from 'react-native';
 import Start from './components/Start';
 import Chat from './components/Chat';
 
