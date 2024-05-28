@@ -11,6 +11,7 @@ const Stack = createNativeStackNavigator();
 
 import { initializeApp } from 'firebase/app';
 import { getFirestore, disableNetwork, enableNetwork } from 'firebase/firestore';
+import * as ImagePicker from 'expo-image-picker';
 
 const App = () => {
   //Defining a new state useNetInfo() that represents the network connectivity
