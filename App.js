@@ -11,7 +11,7 @@ const Stack = createNativeStackNavigator();
 
 import { initializeApp } from 'firebase/app';
 import { getFirestore, disableNetwork, enableNetwork } from 'firebase/firestore';
-import * as ImagePicker from 'expo-image-picker';
+import { getStorage } from 'firebase/storage';
 
 const App = () => {
   //Defining a new state useNetInfo() that represents the network connectivity
@@ -42,6 +42,9 @@ const App = () => {
   //Initialize Cloud Firestore and get a reference to  the service
   const db = getFirestore(app);
 
+  //Initialize the storage
+  const storage = getStorage(app);
+
   return (
     <NavigationContainer style={styles.container}>
       <Stack.Navigator
@@ -57,6 +60,7 @@ const App = () => {
               <Chat 
                 isConnected={connectionStatus.isConnected} 
                 db={db} 
+                storage={storage}
                 {...props} />
           }
         </Stack.Screen>
