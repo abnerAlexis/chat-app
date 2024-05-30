@@ -3,11 +3,20 @@ import { StyleSheet, View, Platform, KeyboardAvoidingView } from "react-native";
 import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import { collection, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CustomActions from "./CustomActions";
 
 const Chat = ({ route, navigation, db, isConnected }) => {
     // using object destructuring to extract specific properties(name, userID and background) from the route.params object.
     const { name, backgroundColor, userID } = route.params;
     const [messages, setMessages] = useState([]);
+
+    const renderCustomActions = (props) => {
+        return
+            <CustomActions 
+                storage={storage}
+                {...props}
+            />
+    }
 
     // Customization for the background color of bubbles
     const renderBubble = (props) => {
@@ -92,6 +101,7 @@ const Chat = ({ route, navigation, db, isConnected }) => {
                 messages={messages}
                 renderBubble={renderBubble}
                 renderInputToolbar={renderInputToolbar}
+                renderActions={renderCustomActions}
                 onSend={messages => onSend(messages)}
                 user={{
                     _id: userID,
