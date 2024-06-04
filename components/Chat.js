@@ -4,18 +4,44 @@ import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import { collection, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomActions from "./CustomActions";
+import MapView from 'react-native-maps';
 
-const Chat = ({ route, navigation, db, isConnected }) => {
+const Chat = ({ route, navigation, db, isConnected, storage }) => {
     // using object destructuring to extract specific properties(name, userID and background) from the route.params object.
     const { name, backgroundColor, userID } = route.params;
     const [messages, setMessages] = useState([]);
 
     const renderCustomActions = (props) => {
-        return
-            <CustomActions 
+        return (
+            <CustomActions
+                userID={userID}
                 storage={storage}
                 {...props}
             />
+        )
+    }
+
+    const renderCustomView = (props) => {
+        const { currentMessage } = props;
+        if (currentMessage.location) {
+            return (
+                <MapView
+                    style={{
+                        width: 150,
+                        height: 100,
+                        borderRadius: 13,
+                        margin: 3
+                    }}
+                    region={{
+                        latitude: currentMessage.location.latitude,
+                        longitude: currentMessage.location.longitude,
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421,
+                    }}
+                />
+            );
+        }
+        return null;
     }
 
     // Customization for the background color of bubbles
@@ -35,9 +61,9 @@ const Chat = ({ route, navigation, db, isConnected }) => {
         )
     }
 
-    useEffect(() => {
-        navigation.setOptions({ title: name });
-    }, []);
+    // useEffect(() => {
+    //     navigation.setOptions({ title: name });
+    // }, []);
 
     // Transfering text messages to storage
     const cacheMessages = async (messagesToCache) => {
@@ -58,28 +84,26 @@ const Chat = ({ route, navigation, db, isConnected }) => {
 
     useEffect(() => {
         if (isConnected) {
-            const messageQuery = query(
-                collection(db, 'messages'),
-                orderBy('createdAt', 'desc')
-            );
-
-            const unsubscribe = onSnapshot(messageQuery, (querySnapshot) => {
-                const messagesFirestore = querySnapshot.docs.map((doc) => {
-                    const data = doc.data();
-                    return {
-                        _id: doc.id,
-                        text: data.text,
-                        createdAt: data.createdAt.toDate(),
-                        user: data.user,
-                    };
-                });
-                cacheMessages(messagesFirestore);
-                setMessages(messagesFirestore);
-            });
-
-            return () => unsubscribe();
+            navigation.setOptions({ title: name });
+            const messageQuery = query(collection(db, 'messages'),
+                orderBy('createdAt', 'desc'));
+            unsubscribe = onSnapshot(messageQuery, (docs) => {
+                let newMessages = [];
+                docs.forEach(doc => {
+                    newMessages.push({
+                        id: doc.id,
+                        ...doc.data(),
+                        createdAt: new Date(doc.data().createdAt.toMillis())
+                    })
+                })
+                cacheMessages(newMessages);
+                setMessages(newMessages);
+            })
         } else {
             loadCachedMessages();
+        }
+        return () => {
+            if (unsubscribe) unsubscribe();
         }
     }, [isConnected]);
 
@@ -90,7 +114,7 @@ const Chat = ({ route, navigation, db, isConnected }) => {
     // Customizing input toolbar to hide it when offline
     const renderInputToolbar = (props) => {
         if (isConnected) {
-            return <InputToolbar {...props} />;
+            return <InputToolbar  style={styles.inputToolbar} {...props} />;
         }
         return null;
     };
@@ -102,6 +126,7 @@ const Chat = ({ route, navigation, db, isConnected }) => {
                 renderBubble={renderBubble}
                 renderInputToolbar={renderInputToolbar}
                 renderActions={renderCustomActions}
+                renderCustomView={renderCustomView}
                 onSend={messages => onSend(messages)}
                 user={{
                     _id: userID,
@@ -116,6 +141,11 @@ const Chat = ({ route, navigation, db, isConnected }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    inputToolbar: {
+        borderTopWidth: 1,
+        borderTopColor: '#E8E8E8',
+        backgroundColor: '#FFFFFF',
     },
 });
 
