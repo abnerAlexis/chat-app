@@ -2,7 +2,7 @@ import { StyleSheet, Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useEffect } from 'react';
-import { useNetInfo }from '@react-native-community/netinfo';
+import { useNetInfo } from '@react-native-community/netinfo';
 import Start from './components/Start';
 import Chat from './components/Chat';
 
@@ -56,10 +56,10 @@ const App = () => {
         />
         <Stack.Screen name='Chat'>
           {
-            props => 
-              <Chat 
-                isConnected={connectionStatus.isConnected} 
-                db={db} 
+            props =>
+              <Chat
+                isConnected={connectionStatus.isConnected}
+                db={db}
                 storage={storage}
                 {...props} />
           }

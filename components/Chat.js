@@ -114,7 +114,7 @@ const Chat = ({ route, navigation, db, isConnected, storage }) => {
     // Customizing input toolbar to hide it when offline
     const renderInputToolbar = (props) => {
         if (isConnected) {
-            return <InputToolbar  style={styles.inputToolbar} {...props} />;
+            return <InputToolbar style={styles.inputToolbar} {...props} />;
         }
         return null;
     };
